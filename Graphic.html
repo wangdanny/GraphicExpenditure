@@ -1,0 +1,112 @@
+<html>
+<head>
+<title>Family Financial Report</title>
+	<!--<meta http-equiv="content-type" content="text/html; charset=UTF8">-->
+	<script src="https://www.dropbox.com/static/api/dropbox-datastores-1.0-latest.js" type="text/javascript"></script>
+	<script src="https://dl.dropboxusercontent.com/spa/3cgawmuptrsgdwe/financial_report/public/financial_app_script.js" type="text/javascript"></script>
+	<script src="https://dl.dropboxusercontent.com/spa/3cgawmuptrsgdwe/financial_report/public/d3.v3.js" type="text/javascript" charset="utf-8"></script>
+	<!--<script src="http://d3js.org/d3.v3.js" charset="utf-8"></script>--> 
+</head>
+<body onload="init()">
+	<div id="transactionDate">date of the transaction <input type="date"/></div>
+	<div id="transactionLocation">location <input type="text"/></div>
+	<div id="total">total amount: <input type="text"/>
+		<button onclick="addType()">add</button>
+		<button onclick="storeData()">save</button>
+		<button onclick="deleteTestDataAction()">delete test data</button>
+		<button onclick="getTestData()">get test data</button>
+		<button onclick="drawBarGraph()">draw bar graph</button>
+		<button onclick="drawPieGraph()">draw pie graph</button>
+		<button onclick="drawTestData()">test</button>
+	</div>
+	<div id="expendablePane">
+	<div id="samplePane">
+		<select>
+			<optgroup label="Food">
+				<option>meat</option>
+				<option>vegetable</option>
+				<option>sea_food</option>
+				<option>fruit</option>
+				<option>grain</option>
+				<option>eggs</option>
+				<option>milk</option>
+				<option>oil</option>
+				<option>snack</option>
+				<option>bread</option>
+				<option>alcohol</option>
+				<option>flavor</option>
+				<option>beancurd</option>
+				<option>nuts</option>
+			</optgroup>
+			<optgroup label="Transportation">
+				<option>myki</option>
+				<option>petrol</option>
+				<option>car_insurance</option>
+				<option>car_rego</option>
+				<option>car_service</option>
+			</optgroup>
+			<optgroup label="Living">
+				<option>house_insurance</option>
+				<option>home_loan</option>
+				<option>rent_fees</option>
+			</optgroup>
+			<optgroup label="Costume">
+				<option>clothes</option>
+				<option>shoes</option>
+			</optgroup>
+			<optgroup label="Textile">
+				<option>quilt</option>
+				<option>pillow</option>
+				<option>mattress protector</option>
+				<option>mattress pad</option>
+			</optgroup>
+			<optgroup label="Commodity">
+				<option>teeth_brush</option>
+				<option>tooth_paste</option>
+				<option>mouth_wash_water</option>
+				<option>washing_powder</option>
+			</optgroup>
+			<optgroup label="Health">
+				<option>health_products(vitamin)</option>
+				<option>doctor_fees</option>
+				<option>private_insurance</option>
+			</optgroup>
+			<optgroup label="Energy">
+				<option>water fees</option>
+				<option>electricity fees</option>
+				<option>gas fees</option>
+			</optgroup>
+			<optgroup label="Gardening">
+				<option>seed</option>
+				<option>plant</option>
+				<option>fertilizer</option>
+				<option>Insecticide</option>
+				<option>tools</option>
+			</optgroup>
+			<optgroup label="Baby">
+				<option>baby clothes</option>
+				<option>equipment</option>
+				<option>nappy</option>
+				<option>baby food</option>
+				<option>baby medicine</option>
+				<option>baby textile</option>
+			</optgroup>
+			<optgroup label="Furniture">
+			</optgroup>
+			<optgroup label="Electrical Appliances">
+			</optgroup>
+			<optgroup label="Kitchen Ware">
+			</optgroup>
+			<optgroup label="Mobile Phone">
+			</optgroup>
+			<optgroup label="Internet Fees">
+			</optgroup>
+			<optgroup label="Other One-Time Consumption">
+			</optgroup>
+		</select>
+		amount <input type="text"/>
+		<button id="removeButton" onclick="removeType(this)">remove</button>
+	</div>
+	</div>
+<body>
+</html>
