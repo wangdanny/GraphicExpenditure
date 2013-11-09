@@ -5,4 +5,5 @@ This project is meant to help people effectively understand their expense status
 dependencies:
 
 D3
+
 Dropbox Datastore API
