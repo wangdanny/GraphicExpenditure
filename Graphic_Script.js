@@ -170,6 +170,11 @@
 	//=====================================D3 code======================
 	function drawBarGraph(dataset){
 		//var dataset=[0,1,2,3,4,5,6,7,8,9];
+		var heightUnit = 0;
+		for(var i=0;i<dataset.length;i++){
+			heightUnit+=dataset[i]
+		}
+		heightUnit = 300/heightUnit;
 		var width = svg_width;
 		var height = 300;
 		var barPadding = 1;
@@ -185,12 +190,14 @@
 				})
 		.attr("y", 
 		      function(d) {
-				return (height - 20*d);
+				// return (height - 20*d);
+				return (height - heightUnit*d);
 				})
 		.attr("width", width / dataset.length - barPadding)
 		.attr("height", 
 			  function(d) {
-				return 20*d;
+				// return 20*d;
+				return heightUnit*d;
 				})
 		.attr("fill", "teal");
 	}
