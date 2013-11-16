@@ -1,12 +1,13 @@
 	//=================Constants================================
-	var tableName = 'expenses';
+	var EXPENSES_TABLE_NAME = 'expenses';
+	var LOCATION_TABLE_NAME = 'location';
 	//make it wide so that next graph will be below.
 	var svg_width = 1200;
 	var LOCATION = "location";
 	var TOTAL_VALUE="total_value";
-	var YEAR = "year";
-	var MONTH = "month";
-	var WEEK = "week";
+	var YEAR = 'year';
+	var MONTH = 'month';
+	var WEEK = 'week';
 	//==========================Global variable==================
 	var dataStore;
 	//======================================GUI==================
@@ -100,35 +101,37 @@
 		execute(deleteTestData);
 	}
 	
-	function storeData(){
+	function storeExpenseData(){
 		var expenseData = collectData();
-		insertData(expenseData);
+		insertExpenseData(expenseData);
 	}
 	//==============================data persistance==============
-	function insertData(expenseData){
+	function insertExpenseData(expenseData){
 		var queryParam = {};
 		queryParam[LOCATION] = expenseData[LOCATION];
 		queryParam[YEAR] = expenseData[YEAR];
 		queryParam[MONTH] = expenseData[MONTH];
 		queryParam[WEEK] = expenseData[WEEK];
 		function queryAndSave(dataStore){
-			var expenseTable = dataStore.getTable(tableName);
+			var expenseTable = dataStore.getTable(EXPENSES_TABLE_NAME);
 			var result = expenseTable.query(queryParam);
 			if(result.length>1)
 				throw "there should be only one record given a date and a location. Check the data.";
+			//Combine if there is already a record at the same date and location
 			if(result.length==1)
 			{
-				//combine and delete the old data;
 				var currentRecord = result[0];
 				combineRecord(currentRecord, expenseData);
 			}
 			else
-				saveData(expenseData);
+				//saveData(expenseData);
+				saveDataSyn(dataStore, EXPENSES_TABLE_NAME, expenseData);
 		}
 		execute(queryAndSave);
 	}
 	
-	function saveData(dataToSave){
+	//Save data asynchronously
+	function saveDataAsyn(dataToSave, tableName){
 		function save(dataStore){
 			var expenseTable = dataStore.getTable(tableName);
 			expenseTable.insert(dataToSave); 
@@ -136,26 +139,41 @@
 		execute(save);
 	}
 	
+	//Save data synchronously
+	function saveDataSyn(dataStore, tableName, dataToSave){	
+		var expenseTable = dataStore.getTable(tableName);
+		expenseTable.insert(dataToSave); 
+	}
+	
 	function deleteData(dataToDelete){
 		return function(dataStore){
 		}
 	}
 	
-	function search(dataStore, queryStandard){
+	function search(dataStore, tableName, queryStandard){
 		var expenseTable = dataStore.getTable(tableName);
 		return expenseTable.query(queryStandard);
 	}
 	//===================================business logics================
-	function getPeriodTotalExpense(year,/*MONTH or WEEK*/period, /*number: 12 or 53*/num){
+	function getTotalExpenseForPeriod(year,/*MONTH or WEEK*/periodType){
 		var query = {};
 		query[YEAR] = year;
 		var queryResult;
 		var result = new Array();
 		var total = 0;
+		var num = 0;
+		if(periodType!=undefined){
+			if(periodType === MONTH)
+				num = 12;
+			else if(periodType === WEEK)
+				num = 53;
+			else 
+				throw "An invalid period type is input.";
+		}
 		if(dataStore!= undefined){
 			for(var i=1;i<=num;i++){
-				query[period] = i;
-				queryResult = search(dataStore,query);
+				query[periodType] = i;
+				queryResult = search(dataStore, EXPENSES_TABLE_NAME, query);
 				for(var j=0;j<queryResult.length;j++){
 					total+=queryResult[j].get(TOTAL_VALUE);
 				}
@@ -163,7 +181,6 @@
 				total=0;
 			}
 		}
-		//alert(result);
 		return result;
 	}
 	
@@ -321,6 +338,6 @@
 	}
 	
 	function drawTestData(){
-		drawBarGraph(getPeriodTotalExpense(2013,'month',12));
-		drawPieGraph(getPeriodTotalExpense(2013,'month',12));
+		drawBarGraph(getTotalExpenseForPeriod(2013,'month'));
+		drawPieGraph(getTotalExpenseForPeriod(2013,'month'));
 	}
