@@ -25,8 +25,11 @@ takes advantage of below open source libraries so far:</div>
 <div>
 Since the application is hosted by dropbox, the premise of using GraphicExpenditure is to have a Dropbox account before 
 any coding and testing. After register and sign in Dropbox, follow below steps to make GraphicExpenditure run:</div>
-<div>Create a folder under your Public folder of Dropbox;</div>
-<div>Copy all the files of this application to the new folder;</div>
-<div>Right click the application's main page (Graphic.html) and select "copy public link";</div>
-<div>Paste the link to your browser (Chrome preferred) to run GraphicExpenditure.</div>
+<ul>
+<li>Create a folder under your Public folder of Dropbox</li>
+<li>Copy all the files of this application to the new folder</li>
+<li>Right click the application's main page (Graphic.html) and select "copy public link"</li>
+<li>Change the resource reference in head part of Graphic.html</li>
+<li>Paste the link to your browser (Chrome preferred) to run GraphicExpenditure</li>
+</ul>
 </p>
