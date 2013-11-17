@@ -1,6 +1,8 @@
 	//=================Constants================================
 	var EXPENSES_TABLE_NAME = 'expenses';
 	var LOCATION_TABLE_NAME = 'location';
+	var LOCATION_RECORD_ID = 'location_list';
+	var LOCATION_RECORD_FIELD_NAME = 'list';
 	//make it wide so that next graph will be below.
 	var svg_width = 1200;
 	var LOCATION = "location";
@@ -9,7 +11,7 @@
 	var MONTH = 'month';
 	var WEEK = 'week';
 	//==========================Global variable==================
-	var dataStore;
+	var dataStoreInSession;
 	//======================================GUI==================
 	function addType(){
 		var sampleDiv = document.getElementById("samplePane").cloneNode(true);
@@ -59,12 +61,11 @@
 	}
 	//=================DataStore===============
 	function init(){
-		//alert("page loaded");
 		function dataStoreCallBack(error, newDatastore){
 			if (error) {
 				alert('Error opening default datastore: ' + error);
 			}
-			dataStore = newDatastore;
+			dataStoreInSession = newDatastore;
 		}
 		var client = authenticate()();
 		var datastoreManager = client.getDatastoreManager();
@@ -101,7 +102,13 @@
 		execute(deleteTestData);
 	}
 	
-	function storeExpenseData(){
+	function saveClicked(){
+		var transactionLocation = document.getElementById("transactionLocation");
+		var location = transactionLocation.getElementsByTagName("input")[0].value;
+		if(!locationExist(location)){
+			alert("this is a new location");
+			saveLocation(location);
+		}
 		var expenseData = collectData();
 		insertExpenseData(expenseData);
 	}
@@ -125,11 +132,12 @@
 			}
 			else
 				//saveData(expenseData);
-				saveDataSyn(dataStore, EXPENSES_TABLE_NAME, expenseData);
+				saveDataSyn(dataStoreInSession, EXPENSES_TABLE_NAME, expenseData);
 		}
 		execute(queryAndSave);
 	}
 	
+	//todo: combine this and the saveDataSyn
 	//Save data asynchronously
 	function saveDataAsyn(dataToSave, tableName){
 		function save(dataStore){
@@ -150,11 +158,33 @@
 		}
 	}
 	
-	function search(dataStore, tableName, queryStandard){
-		var expenseTable = dataStore.getTable(tableName);
+	//search should be synchronously as later code cannot wait.
+	function search(tableName, queryStandard){
+		var expenseTable = dataStoreInSession.getTable(tableName);
 		return expenseTable.query(queryStandard);
 	}
-	//===================================business logics================
+	
+	//return a dropbox list that contains stored locations
+	function getLocations(){
+		var locationRecord = getLocationRecord();
+		return locationRecord.get(LOCATION_RECORD_FIELD_NAME);
+	}
+	
+	function saveLocation(newLocation){
+		var locationRecord = getLocationRecord();
+		var locations = locationRecord.get(LOCATION_RECORD_FIELD_NAME);
+		locations.push(newLocation);
+	}
+	
+	function getLocationRecord(){
+		var locationTable = dataStoreInSession.getTable(LOCATION_TABLE_NAME);
+		var locationList = {};
+		locationList[LOCATION_RECORD_FIELD_NAME] = [];
+		var recordId = LOCATION_RECORD_ID;
+		var locationRecord = locationTable.getOrInsert(recordId, locationList);
+		return locationRecord;
+	}
+	//===================================logics================
 	function getTotalExpenseForPeriod(year,/*MONTH or WEEK*/periodType){
 		var query = {};
 		query[YEAR] = year;
@@ -170,10 +200,10 @@
 			else 
 				throw "An invalid period type is input.";
 		}
-		if(dataStore!= undefined){
+		if(dataStoreInSession!= undefined){
 			for(var i=1;i<=num;i++){
 				query[periodType] = i;
-				queryResult = search(dataStore, EXPENSES_TABLE_NAME, query);
+				queryResult = search(EXPENSES_TABLE_NAME, query);
 				for(var j=0;j<queryResult.length;j++){
 					total+=queryResult[j].get(TOTAL_VALUE);
 				}
@@ -184,9 +214,19 @@
 		return result;
 	}
 	
+	function locationExist(location){
+		if(location == 'undefined')
+			return false;
+		var locationList = getLocations();
+		for(var i=0;i<locationList.length();i++){
+			if(location === locationList.get(i))
+				return true;
+		}
+		return false;
+	}
+
 	//=====================================D3 code======================
 	function drawBarGraph(dataset){
-		//var dataset=[0,1,2,3,4,5,6,7,8,9];
 		var heightUnit = 0;
 		for(var i=0;i<dataset.length;i++){
 			heightUnit+=dataset[i]
@@ -220,7 +260,6 @@
 	}
 	
 	function drawPieGraph(dataset){
-		//var dataset = [ 5, 10, 20, 45, 6, 25 ];
 		var pie = d3.layout.pie();
 		var w = svg_width;
 		var h = 400;
