@@ -3,7 +3,7 @@ GraphicExpenditure
 <h3>Introduction</h3>
 <p>GraphicExpenditure is a data persistent and presentation application that meants to help people effectively understand 
 their expense. GraphicExpenditure has two main tasks. The first one is to provide users a flexible way to access their 
-expenditure that stored in the Dropbox cloud. With a Dropbox account in hand, users can access heir personal data anywhere 
+expenditure that stored in the Dropbox cloud. With a Dropbox account in hand, users can access their personal data anywhere 
 from any devices.</p>
 
 <p>Another core function of GraphicExpenditure is to present these data in abundant graphs from different angles. Users can 
