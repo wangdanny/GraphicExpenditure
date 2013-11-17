@@ -3,7 +3,7 @@ GraphicExpenditure
 <h3>Introduction</h3>
 This project is meant to help people effectively understand their expense status so that can smartly manage and plan the 
 future spending. GraphicExpenditure is a pure web application which takes use of Dropbox as a static web server. This means
-that there is no "server side" code. All the code is written in JavaScript, HTML and CSS. The premise of using 
+that there is no "server side" code and all the code is written in JavaScript, HTML and CSS. The premise of using 
 this application is to be a Dropbox user. With a Dropbox account in hand, you will have private storage "in the cloud" to
 store your personal data. GraphicExpenditure provides methods to input the data and present those data.
 
