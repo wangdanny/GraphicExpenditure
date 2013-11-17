@@ -27,7 +27,7 @@ Since the application is hosted by dropbox, the premise of using GraphicExpendit
 any coding and testing. After register and sign in Dropbox, follow below steps to make GraphicExpenditure run:</div>
 <ul>
 <li>Create a folder under your Public folder of Dropbox</li>
-<li>Copy all the files of this application to the new folder</li>
+<li>Copy Graphic_Script.js, Graphic.html and d3.v3.js to the new folder</li>
 <li>Right click the application's main page (Graphic.html) and select "copy public link"</li>
 <li>Replace the resource reference in head part of Graphic.html with your own Dropbox address</li>
 <li>Paste the link to your browser (Chrome preferred) to run GraphicExpenditure</li>
