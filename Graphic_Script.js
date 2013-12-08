@@ -3,6 +3,7 @@
 	var LOCATION_TABLE_NAME = 'location';
 	var LOCATION_RECORD_ID = 'location_list';
 	var LOCATION_RECORD_FIELD_NAME = 'list';
+	var CATEGORY_TABLE_NAME = 'category';
 	//make it wide so that next graph will be below.
 	var svg_width = 1200;
 	var LOCATION = "location";
@@ -12,6 +13,7 @@
 	var WEEK = 'week';
 	//==========================Global variable==================
 	var dataStoreInSession;
+	var category = {};
 	//======================================GUI==================
 	function addType(){
 		var sampleDiv = document.getElementById("samplePane").cloneNode(true);
@@ -70,7 +72,80 @@
 		var client = authenticate()();
 		var datastoreManager = client.getDatastoreManager();
 		datastoreManager.openDefaultDatastore(dataStoreCallBack);
+		initCategory();
 	}
+	
+	function initCategory(){
+		//Food
+		category['meat']='Food';
+		category['vegetable']='Food';
+		category['sea_food']='Food';
+		category['fruit']='Food';
+		category['grain']='Food';
+		category['eggs']='Food';
+		category['milk']='Food';
+		category['oil']='Food';
+		category['snack']='Food';
+		category['bread']='Food';
+		category['alcohol']='Food';
+		category['flavor']='Food';
+		category['beancurd']='Food';
+		category['nuts']='Food';
+		
+		//Transportation
+		category['myki']='Transportation';
+		category['petrol']='Transportation';
+		category['car_insurance']='Transportation';
+		category['car_rego']='Transportation';
+		category['car_service']='Transportation';
+		
+		//Living
+		category['house_insurance']='Living';
+		category['home_loan']='Living';
+		category['rent_fees']='Living';
+		
+		//Costume
+		category['clothes']='Costume';
+		category['shoes']='Costume';
+		
+		//Textile
+		category['quilt']='Textile';
+		category['pillow']='Textile';
+		category['mattress_protector']='Textile';
+		category['mattress_pad']='Textile';
+		
+		//Commodity
+		category['teeth_brush']='Commodity';
+		category['tooth_paste']='Commodity';
+		category['mouth_wash_water']='Commodity';
+		category['washing_powder']='Commodity';
+		
+		//Health
+		category['health_medicine']='Health';
+		category['doctor_fees']='Health';
+		category['private_insurance']='Health';
+		
+		//Energy
+		category['water_fees']='Energy';
+		category['electricity_fees']='Energy';
+		category['gas_fees']='Energy';
+		
+		//Gardening
+		category['seed']='Gardening';
+		category['plant']='Gardening';
+		category['fertilizer']='Gardening';
+		category['Insecticide']='Gardening';
+		category['tools']='Gardening';
+		
+		//Baby
+		category['baby_clothes']='Baby';
+		category['equipment']='Baby';
+		category['nappy']='Baby';
+		category['baby_food']='Baby';
+		category['baby_medicine']='Baby';
+		category['baby_textile']='Baby';
+	}
+	
 	function authenticate(){
 		var client = new Dropbox.Client({key: 'wy9s1uvip6qnswr'});
 		if (!client.isAuthenticated()) {
@@ -111,6 +186,7 @@
 		}
 		var expenseData = collectData();
 		insertExpenseData(expenseData);
+		saveCategory();
 	}
 	//==============================data persistance==============
 	function insertExpenseData(expenseData){
@@ -139,7 +215,7 @@
 	
 	//todo: combine this and the saveDataSyn
 	//Save data asynchronously
-	function saveDataAsyn(dataToSave, tableName){
+	function saveDataAsyn(tableName, dataToSave){
 		function save(dataStore){
 			var expenseTable = dataStore.getTable(tableName);
 			expenseTable.insert(dataToSave); 
@@ -161,7 +237,9 @@
 	//search should be synchronously as later code cannot wait.
 	function search(tableName, queryStandard){
 		var expenseTable = dataStoreInSession.getTable(tableName);
-		return expenseTable.query(queryStandard);
+		if(expenseTable!='undefined')
+			return expenseTable.query(queryStandard);
+		return 'undefined';
 	}
 	
 	//return a dropbox list that contains stored locations
@@ -183,6 +261,13 @@
 		var recordId = LOCATION_RECORD_ID;
 		var locationRecord = locationTable.getOrInsert(recordId, locationList);
 		return locationRecord;
+	}
+	
+	function saveCategory(){
+		//FIXME: use a more effective search standard
+		var categoryList = search(CATEGORY_TABLE_NAME, {});
+		if(categoryList=='undefined' || categoryList.length == 0)
+			saveDataSyn(dataStoreInSession, CATEGORY_TABLE_NAME,category);
 	}
 	//===================================logics================
 	function getTotalExpenseForPeriod(year,/*MONTH or WEEK*/periodType){
