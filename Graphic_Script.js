@@ -267,7 +267,7 @@
 		//FIXME: use a more effective search standard
 		var categoryList = search(CATEGORY_TABLE_NAME, {});
 		if(categoryList=='undefined' || categoryList.length == 0)
-			saveDataSyn(dataStoreInSession, CATEGORY_TABLE_NAME,category);
+			saveDataSyn(dataStoreInSession, CATEGORY_TABLE_NAME, category);
 	}
 	//===================================logics================
 	function getTotalExpenseForPeriod(year,/*MONTH or WEEK*/periodType){
@@ -308,6 +308,28 @@
 				return true;
 		}
 		return false;
+	}
+	
+	function getTotalOfCategory(/*object specify a range to search category value*/dateRange, 
+	/*a list of category value to calculate*/categoryList){
+		//FIXME: optimize the search strategy (i,e,.search for each month or week). Otherwise too many records may be returned
+		var queryResults = search(EXPENSES_TABLE_NAME, dateRange);
+		
+		var record;
+		var fields;
+		var resultMap;
+				
+		for(int j=0;j<categoryList.length;j++)
+			resultMap[categoryList[j]]=0;
+		
+		for(var i=0;i<queryResults.length;i++){
+			record = queryResults[i];
+			fields = record.getFields();
+			for(f in fields)
+				//FIXME: what if category[f] doesn't exist?
+				if(fields.hasOwnProperty(f) && categoryList.indexOf(category[f])!=-1)
+					resultMap[category[f]]+=record.get(f);							
+		}
 	}
 
 	//=====================================D3 code======================
