@@ -310,26 +310,46 @@
 		return false;
 	}
 	
-	function getTotalOfCategory(/*object specify a range to search category value*/dateRange, 
-	/*a list of category value to calculate*/categoryList){
+	/**
+	 * Return the sum for each category in the categoryList in a date range.
+	 */
+	function getTotalOfCategory(dateRange, categoryList){
 		//FIXME: optimize the search strategy (i,e,.search for each month or week). Otherwise too many records may be returned
 		var queryResults = search(EXPENSES_TABLE_NAME, dateRange);
 		
 		var record;
 		var fields;
-		var resultMap;
+		var resultMap = {};
 				
-		for(int j=0;j<categoryList.length;j++)
+		for(var j=0;j<categoryList.length;j++)
 			resultMap[categoryList[j]]=0;
 		
 		for(var i=0;i<queryResults.length;i++){
 			record = queryResults[i];
 			fields = record.getFields();
 			for(f in fields)
-				//FIXME: what if category[f] doesn't exist?
-				if(fields.hasOwnProperty(f) && categoryList.indexOf(category[f])!=-1)
-					resultMap[category[f]]+=record.get(f);							
+				if(fields.hasOwnProperty(f) && getTargetFromList(categoryList, f)!='undefined')
+					resultMap[getTargetFromList(categoryList, f)]+=record.get(f);							
 		}
+		return resultMap;
+	}
+	
+	/**
+	 * Find a field from a given categoryList.
+	 * If the field is in the list, return the field.
+	 * If the field is not in the list but is in the sub-category list of a field in the list, 
+	 * return the field's parent which is in the list.
+	 * return 'undefined' if neither of the above cases.
+	**/
+	function getTargetFromList(categoryList, field){
+		//check if the field is an element of the list
+		if(categoryList.indexOf(field)!=-1)
+			return field;
+		//check if the field is a sub-category of any fields in the list
+		//TODO: only check one level for now. Check more levels in future.
+		if(categoryList.indexOf(category[field])!=-1)
+			return category[field];
+		return 'undefined';
 	}
 
 	//=====================================D3 code======================
@@ -484,6 +504,16 @@
 	}
 	
 	function drawTestData(){
-		drawBarGraph(getTotalExpenseForPeriod(2013,'month'));
-		drawPieGraph(getTotalExpenseForPeriod(2013,'month'));
+		//drawBarGraph(getTotalExpenseForPeriod(2013,'month'));
+		//drawPieGraph(getTotalExpenseForPeriod(2013,'month'));
+		alert(category["sea_food"]);
+		for(var key in getCategoryData())
+			alert(getCategoryData()[key]);
+	}
+	
+	function getCategoryData(){
+		var dateRange = {};
+		dateRange['week']=49;
+		var categories = ['Food'];
+		return getTotalOfCategory(dateRange, categories);
 	}
